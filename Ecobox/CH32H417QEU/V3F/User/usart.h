@@ -1,0 +1,33 @@
+#ifndef __USER_USART_H
+#define __USER_USART_H
+
+#include "debug.h"
+
+#define SCREEN_GROUP_ACTUATOR      0xA5
+#define SCREEN_GROUP_FEEDER        0xA4
+#define SCREEN_GROUP_LIGHT         0xA3
+
+#define SCREEN_CMD_PUMP_ON         0x01
+#define SCREEN_CMD_PUMP_OFF        0x02
+#define SCREEN_CMD_FAN_ON          0x03
+#define SCREEN_CMD_FAN_OFF         0x04
+#define SCREEN_CMD_UVB_ON          0x05
+#define SCREEN_CMD_UVB_OFF         0x06
+
+#define SCREEN_CMD_FEEDER_OPEN          0x01
+#define SCREEN_CMD_FEEDER_RESET         0x02
+#define SCREEN_CMD_FEEDER_OPEN_RESET    0x03
+#define SCREEN_CMD_FEED_ONCE            SCREEN_CMD_FEEDER_OPEN_RESET
+
+#define SCREEN_CMD_SCENE_DAWN      0x01
+#define SCREEN_CMD_SCENE_MORNING   0x02
+#define SCREEN_CMD_SCENE_NOON      0x03
+#define SCREEN_CMD_SCENE_DUSK      0x04
+#define SCREEN_CMD_SCENE_TWILIGHT  0x05
+#define SCREEN_CMD_SCENE_NIGHT     0x06
+#define SCREEN_CMD_LEDEAT_SET      0x11
+#define SCREEN_CMD_LEDWEST_SET     0x12
+#define SCREEN_CMD_LIGHTEAST_SET   SCREEN_CMD_LEDEAT_SET
+#define SCREEN_CMD_LIGHTWEST_SET   SCREEN_CMD_LEDWEST_SET
+
+#endif

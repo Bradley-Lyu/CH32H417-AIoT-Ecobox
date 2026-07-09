@@ -1,0 +1,94 @@
+CH32H417 serial and TJC screen command protocol
+
+Active screen/status UART:
+- MCU PB10 = USART3_TX -> TJC screen RX and/or USB-TTL RX
+- MCU PB11 = USART3_RX <- TJC screen TX and/or USB-TTL TX
+- GND must be common
+- Baudrate: 115200, 8N1
+
+Reserved CH584M UART:
+- MCU PD5 = USART2_TX -> CH584M RX
+- MCU PD6 = USART2_RX <- CH584M TX
+- Do not use PD5/PD6 for TJC screen code.
+- CH584M PB13 = UART1_TX -> MCU PD6
+- CH584M PB12 = UART1_RX <- MCU PD5
+- Baudrate: 115200, 8N1, common GND
+
+Output pins:
+- Pump    -> PA0
+- Fan     -> PA1
+- Feeder  -> PA2 (PWM, servo)
+- LedEast -> PA8 (PWM)
+- LedWest -> PA5 (PWM)
+
+Packet format:
+- 3-byte packet: HEADER CMD END
+- 4-byte packet: HEADER CMD VALUE END
+- END is always 0x5A
+
+1) A5 group: pump / fan / UVB
+- A5 01 5A : pump on
+- A5 02 5A : pump off
+- A5 03 5A : fan on
+- A5 04 5A : fan off
+- A5 05 5A : UVB on
+- A5 06 5A : UVB off
+
+2) A4 group: feeder
+- A4 01 5A : feeder open
+  The servo turns to the feed position and stays there.
+- A4 02 5A : feeder reset
+  The servo returns immediately to the home position.
+- A4 03 5A : feeder open and reset
+  The servo turns to the feed position, waits about 700 ms, then returns automatically.
+
+3) A3 group: light scenes
+- A3 01 5A : dawn
+  LedEast=85%, LedWest=15%
+- A3 02 5A : morning
+  LedEast=100%, LedWest=35%
+- A3 03 5A : noon
+  LedEast=100%, LedWest=100%
+- A3 04 5A : dusk
+  LedEast=35%, LedWest=100%
+- A3 05 5A : twilight
+  LedEast=10%, LedWest=65%
+- A3 06 5A : night
+  LedEast=0%, LedWest=0%
+
+4) A3 direct brightness control
+- A3 11 xx 5A : set LedEast brightness to xx (0..100)
+- A3 12 xx 5A : set LedWest brightness to xx (0..100)
+
+Suggested TJC mapping:
+- Water pump open  -> A5 01 5A
+- Water pump close -> A5 02 5A
+- Fan open         -> A5 03 5A
+- Fan close        -> A5 04 5A
+- UVB open         -> A5 05 5A
+- UVB close        -> A5 06 5A
+- Feeder open      -> A4 01 5A
+- Feeder reset     -> A4 02 5A
+- Feeder open+reset -> A4 03 5A
+- Qingchen         -> A3 01 5A
+- Shangwu          -> A3 02 5A
+- Zhongwu          -> A3 03 5A
+- Bangwan          -> A3 04 5A
+- Huanghun         -> A3 05 5A
+- Ruye             -> A3 06 5A
+
+Suggested BLE text command mapping on CH584M:
+- pump:on                 -> A5 01 5A
+- pump:off                -> A5 02 5A
+- fan:on                  -> A5 03 5A
+- fan:off                 -> A5 04 5A
+- uvb:on                  -> A5 05 5A
+- uvb:off                 -> A5 06 5A
+- feeder:open             -> A4 01 5A
+- feeder:reset            -> A4 02 5A
+- feeder:feed             -> A4 03 5A
+- turtle:hungry           -> A4 03 5A
+- wugui:ele               -> A4 03 5A
+- 乌龟饿了                 -> A4 03 5A, if the phone app sends UTF-8 text
+- lighteast:brightness:N  -> A3 11 N 5A
+- lightwest:brightness:N  -> A3 12 N 5A
